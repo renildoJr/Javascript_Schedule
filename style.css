@@ -1,0 +1,102 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif, Arial, Helvetica;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+h1 {
+    font-weight: 900;
+}
+
+table {
+    border: 1px solid;
+}
+
+table th {
+    background: yellow;
+}
+
+table th, td {
+    border: 1px solid #000;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.overlay {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: rgba(0, 0, 0, 0.37);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal {
+    max-width: 380px;
+    padding: 15px;
+    box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.281);    
+    background: white;
+    position: relative;
+}
+
+.modal h2 {
+    margin-bottom: 20px;
+    border-bottom: 2px solid #d1cccc;
+}
+
+.modal button {
+    display: block;
+    cursor: pointer;
+    font-weight: 800;
+    padding: 10px;
+    border: none;
+    transition: .3s background;
+}
+
+.modal button.btn-fechar_janela {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: red;
+    color: white;
+}
+
+.modal button.btn-fechar_janela:hover {
+    background: #8b0404;
+}
+
+.modal button.btn-confirmar {
+    margin: 0 auto;
+    background: #306bb8;
+    color: white;
+    padding: 10px;
+}
+
+.modal button:hover {
+    background: #250a9c;
+}
+
+.modal select {
+    width: 100%;
+    margin: 5px 0 10px;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.modal#horario-modal {
+    display: none;
+}
+
+.modal#rotina-modal {
+    width: 100%;
+}

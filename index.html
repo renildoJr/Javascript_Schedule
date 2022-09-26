@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="style.css">
+    <title>Daily Routine</title>
+</head>
+<body>
+    <div class="overlay">
+        <div class="modal" id="horario-modal">
+            <button class="btn-fechar_janela">X</button>
+            <h2>Adicionar Horário</h2>
+            <input type="text" class="hora" value="00:00">
+            <button class="btn-confirmar">Confirmar</button>
+        </div>
+    
+        <div class="modal" id="rotina-modal">
+            <button class="btn-fechar_janela">X</button>
+            <h2>Adicionar Rotina</h2>
+            <h3>Selecione a categoria</h3>
+            <select name="catg" id="catg">
+                <option value="demo">demo</option>
+                <option value="demo">demo</option>
+                <option value="demo">demo</option>
+                <option value="demo">demo</option>
+            </select>
+            <button class="btn-confirmar">Confirmar</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Daily Routine</h1>
+        <table class="tabela-dr">
+            <tr>
+                <th>Horários</th class="dia" >
+                <th class="dia">Domingo</th>
+                <th class="dia">Segunda</th>
+                <th class="dia">Terça</th>
+                <th class="dia">Quarta</th>
+                <th class="dia">Quinta</th>
+                <th class="dia">Sexta</th>
+                <th class="dia">Sábado</th>
+            </tr>
+            <!-- <tr>
+                <td>d1</td>
+                <td>d1</td>
+                <td>d1</td>
+                <td>d1</td>
+            </tr> -->
+        </table>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
