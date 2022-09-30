@@ -35,6 +35,17 @@ table th, td {
     cursor: pointer;
 }
 
+table td {
+    width: 100px;
+    height: 50px;
+}
+
+table td.horario {
+    background: #c3db9d5b;
+    font-size: 28px;
+    font-weight: bold;
+}
+
 .overlay {
     width: 100%;
     height: 100%;
@@ -102,23 +113,6 @@ table th, td {
 }
 
 
-table tr .nothing {
-    padding: 25px;
-}
-
-table tr .nothing h2 {
-    text-align: center;
-}
-
-table tr .nothing h2,
-table tr .nothing button {
-    display: block;
-    margin: 0 auto;
-}
-
-table tr .nothing button {
-    padding: 10px;
-}
 
 
 
