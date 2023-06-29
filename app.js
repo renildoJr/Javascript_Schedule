@@ -27,36 +27,46 @@
 // }
 // createTask()
 
-const tabelasContainer = document.querySelector('.tabelas-container');
+const calendarMonths = ['january', 'february', 'march', 'april', 'may', 'junho', 'july', 'august', 'september', 'october', 'november', 'december'];
+const calendarDays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+const tabelas = document.querySelector('.tabelas-container');
+const firstDayOfWeek = new Date(new Date().getFullYear(), new Date().getMonth(), 1).getDay();
+const lastDay = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+const lastMonthDay = new Date(new Date().getFullYear(), new Date().getMonth(), 0).getDate();
+let lastMonthDays = [];
+let l = 0;
+let day = 0;
 
-const calendarMonths = ['january', 'february', 'march', 'april', 'may', 'junho', 'july', 'august', 'september', 'october', 'november', 'december']
-const calendarDays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
-const lastDayCurrentMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0 ).getDate();
-const firstDayCurrentMonth = new Date().getDay();
-const currentMonth = new Date().getMonth();
-
-const lastDayPreviousMonth = new Date(new Date().getFullYear(), currentMonth, 0 ).getDate();
-
-let lastDays = [];
-
-for(let day = lastDayPreviousMonth - 7; day <= lastDayPreviousMonth; day ++) {
-    lastDays.push(day)
+for(let d = lastDay - 6; d <= lastMonthDay; d++) {
+    lastMonthDays.push(d)
 }
 
-lastDays = lastDays.splice(firstDayCurrentMonth)
+lastMonthDays = lastMonthDays.splice(firstDayOfWeek)
 
-for(let sem = 0, day = lastDays[0]; sem < 5; sem ++) {
+
+
+
+for(let i = 0, day = 1; i < 5; i++) {
     const table = document.createElement('table');
-    const tr = document.createElement('th');
-    for(let i = 0; i < 7; i++) {
-        if(day < lastDays[lastDays.length - 1]) {
-            tr.innerHTML += `<th>${calendarDays[i]} ${day}</th>`;
+    const tr = document.createElement('tr');
+
+    for(let d = 0; d < 7; d++) {
+        
+        // last month items
+        if(l < lastMonthDays.length) {
+            tr.innerHTML += `<th>${calendarDays[d]} ${lastMonthDays[l]}</th>`;
+            l++
+        }else if(day <= lastDay) {
+            tr.innerHTML += `<th>${calendarDays[d]} ${day}</th>`;
             day++;
         }else {
-            day = 1
-            tr.innerHTML += `<th>${calendarDays[i]} ${day}</th>`;
+            day = 1;
+            tr.innerHTML += `<th>${calendarDays[d]} ${day}</th>`;
+            day++;
         }
     }
-    table.appendChild(tr);
-    tabelasContainer.appendChild(table)
+
+    table.appendChild(tr)
+    tabelas.appendChild(table);
+
 }
