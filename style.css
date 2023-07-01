@@ -14,9 +14,12 @@
 }
 
 .tabelas-container {
+    margin-top: 100px;
+    margin-bottom: 100px;
+
     display: flex;
     flex-direction: column;
-    /* gap: 2rem; */
+    gap: 2rem;
 }
 
 table {
@@ -35,9 +38,28 @@ table td {
     text-align: left;
 }
 
+
+table th {
+    background: rgba(146, 50, 50, 0.439);
+}
+
+table td.hora {
+    background: #754d4d;
+    color: #ffffff;
+
+}
+table td.hora {
+    color: #ffffff;
+}
+
+table td.task {
+    cursor: pointer;
+}
+
 table th.prev-month {
     background: #000
 }
+
 
 /* button {
     cursor: pointer;
