@@ -43,6 +43,10 @@ table th {
     background: rgba(146, 50, 50, 0.439);
 }
 
+table th.dark {
+    background: rgb(49, 44, 44);
+}
+
 table td.hora {
     background: #754d4d;
     color: #ffffff;
