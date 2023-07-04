@@ -9,6 +9,7 @@ export class Task {
         const tasks = this.getTasks()
         console.log(tasks)
         const newTask = {
+            id: Math.round(Math.random() * 1000),
             name,
             horarios,
             dias,
