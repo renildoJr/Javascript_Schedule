@@ -7,7 +7,6 @@ export class Task {
 
     static newTask(name = 'unknown', horarios = [], dias = [], color = defaultColor) {
         const tasks = this.getTasks()
-        console.log(tasks)
         const newTask = {
             id: Math.round(Math.random() * 1000),
             name,
@@ -17,8 +16,13 @@ export class Task {
         };
 
         tasks.push(newTask);
-
         return save(tasks);
+    }
+
+    static getTask(id) {
+        const tasks = this.getTasks()
+        const task = tasks.find(task => task.id === id)  || false;
+        return task;
     }
 
 }
@@ -26,3 +30,4 @@ export class Task {
 function save(data) {
     return localStorage.setItem('Routine', JSON.stringify(data))
 }
+

@@ -7,10 +7,8 @@ const ultimoDia = new Date(date.getFullYear(), mesAtual + 1, 0).getDate();
 const primeiroDiaSemana = new Date(date.getFullYear(), mesAtual).getDay();
 const diasSemana = [[], [], [], [], [], [], []];
 
-
-
-for(let d = 1, dia = primeiroDiaSemana, sem = 0; d <= ultimoDia; d++) {
-    diasSemana[dia].push({dia: d, tasks: []})
+for(let d = 1, dia = primeiroDiaSemana; d <= ultimoDia; d++) {
+    diasSemana[dia].push({dia: d, semana: numeroSemana(d) , tasks: []})
     if(dia > diasSemana.length - 2) {
         dia = 0;
     }else {
@@ -34,32 +32,145 @@ tasks.forEach(task => {
     })
 });
 
+// Renderização HTML do calendário (Semana atual)
 const diasCalendario = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
 const tabela = document.querySelector('table');
 const thead = document.createElement('tr');
 
-diasCalendario.map(dia => {
-    thead.innerHTML+=`<th>${dia}</th>`
+function listaSemana(numSem = 0) {
+    const semana = [];
+    for(const array of diasSemana) {
+        const obj = array.find(obj => obj.semana === numSem);
+        if(obj) {
+            semana.push(obj);
+        }
+    }
+    return semana;
+}
+
+// Renderização HTML do calendário (Semana atual)
+
+const ultimoDiaMesPassado = new Date(date.getFullYear(), mesAtual, 0).getDate();
+
+let ultimosDiasMesPassado = [];
+
+for(let i = 0, dia = ultimoDiaMesPassado - 6; i < 7; i++) {
+    ultimosDiasMesPassado.push(dia);
+    dia++;
+}
+
+ultimosDiasMesPassado = ultimosDiasMesPassado.splice(listaSemana(0).length);
+
+const semana = listaSemana(1) // Tornar isso dinâmico mas tarde (o Date escolherá automáticamente de acordo com a semana atual)
+// SE SETAR semana com parâmetro === 5 resultará em erro
+
+thead.innerHTML = `<th></th>`;
+
+let novoIndex = 0;
+diasCalendario.map((dia, index) => {
+    let data;
+    if(semana[0].semana === 0 && index !== ultimosDiasMesPassado.length) {
+        data = ultimosDiasMesPassado[index];
+    }else {
+        const objSemana = semana[novoIndex];
+        data = objSemana.dia; //CORRIGIR ESTE ERRO AQUI
+        novoIndex ++;
+    }
+    thead.innerHTML+=`<th>${dia} ${data}</th>`;
 })
 
 tabela.appendChild(thead)
 
-console.log(diasSemana)
+// Esta função descobre a semana da data especificada
+function numeroSemana(dia) {
+    const offsetInicio = (primeiroDiaSemana + 6) % 7; // Offset para o primeiro dia da semana
+    const ajusteDia = dia + offsetInicio ;
+    return Math.floor(ajusteDia / 7);
+}
+
+// Próximo Passo: 
+// adicionar dinamicamente novas rows para a variavel "HTML" tabela
+// As rows serão adicionadas de acordo com a quantidade de horarios de cada task
+//(OK) criar um método para acessar o objeto task através do id de propriedades "tasks" do objeto semana[index].objeto.tasks 
+
+/**
+ * (OK) as tasks deverão ser exibidas de acordo com seu determinado dia (task.dias[index] === diasSemana[index].obj.dia)
+ * (OK) atenção: os dias devem ser de acordo com os dias da semanta atual
+ * (OK) Detectar os horários: 
+ * (OK) exibir as rows + horarios em ordem crescente
+ */
+
+const tasksSemanaAtual = new Set();
+
+semana.forEach(obj => {
+    obj.tasks.forEach(taskId => tasksSemanaAtual.add(taskId));
+})
+
+let horariosSemanaAtual = [];
+
+// Acessar horários dos itens
+tasksSemanaAtual.forEach(taskId => {
+    const task = Task.getTask(taskId);
+    task.horarios.forEach(hora => {horariosSemanaAtual.push(hora)})
+});
 
 
-// ALGORITIMO PARA DESCOBRIR A SEMANA DO DIA ESPECIFICADO DO MES ATUAL
-function getWeekOfMonth(day) {
-    const now = new Date();
-    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const startOffset = (firstDayOfMonth.getDay() + 6) % 7; // Offset para o primeiro dia da semana
-    const adjustedDay = day + startOffset - 1;
-  
-    return Math.floor(adjustedDay / 7);
-  }
-  
-  // Exemplo de uso:
-  const day = 70; // Dia especificado no mês atual
-  
-  const weekNumber = getWeekOfMonth(day);
-  console.log(`Semana ${weekNumber}`);
+let index = 7;
+horariosSemanaAtual = horariosSemanaAtual.sort();
+// renderizar as rows HTML de horarios
+horariosSemanaAtual.forEach(hora => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="hora">${hora}</td>`;
+
+    if(semana.length < index ) {
+        for(let i = 0; i < ultimosDiasMesPassado.length; i++)
+        tr.innerHTML+=`<td></td>`;
+        index++;
+        console.log(index)
+    }
+
+    semana.forEach(obj => {
+        // Descobrir a task correspondente áo do horário iterado
+        let taskAtual = false;
+        let taskName = '';
+
+        for(const taskId of obj.tasks) {
+            const task = Task.getTask(taskId);
+            if(task.horarios.find(horario => horario === hora)){
+                taskAtual = task;
+                break;
+            }
+        }
+
+        if(taskAtual) {
+            taskName = taskAtual.name;
+        }
+
+        tr.innerHTML += `<td class="task" style="background: ${taskAtual ? taskAtual.color : ''}">${taskName}</td>`;
+        
+    
+
+    })
+
+
+    tabela.appendChild(tr);
+})
+
+console.log(Task.getTasks())
+
+// Variáves que serão utilizadas
+// console.log(tabela);
+// console.log(semana)
+// console.log(diasSemana)
+// console.log(tasks)
+
+// const task = obj.tasks.reduce((acc, item) => {
+//     const taskAtual = Task.getTask(item)
+//     if(taskAtual.horarios.find(itemHora => itemHora === hora)) {
+//         console.log(taskAtual.horarios.find(itemHora => console.log(itemHora === hora)))
+//         // console.log(taskAtual.horarios.find(horar => horar === hora))
+//         console.log(taskAtual+" "+hora)
+//         return acc = Task.getTask(item);
+//     }
+// },{})
