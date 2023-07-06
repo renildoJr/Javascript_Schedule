@@ -6,6 +6,7 @@ const mesAtual = new Date(date.getFullYear(), date.getMonth()).getMonth();
 const ultimoDia = new Date(date.getFullYear(), mesAtual + 1, 0).getDate();
 const primeiroDiaSemana = new Date(date.getFullYear(), mesAtual).getDay();
 const diasSemana = [[], [], [], [], [], [], []];
+const hoje = date.getDate();
 
 for(let d = 1, dia = primeiroDiaSemana; d <= ultimoDia; d++) {
     diasSemana[dia].push({dia: d, semana: numeroSemana(d) , tasks: []})
@@ -16,7 +17,7 @@ for(let d = 1, dia = primeiroDiaSemana; d <= ultimoDia; d++) {
     }
 }
 
-const tasks = Task.getTasks()
+const tasks = Task.getTasks();
 // Task.newTask('watch tv', [1200, 1800], [6, 12, 23, 8], 'orange');
 // Task.newTask('play game', [2300], [1, 3, 15, 18, 6], 'blue');
 // Task.newTask('sleep', [100], [2, 5, 8, 9, 16], 'blue');
@@ -31,6 +32,39 @@ tasks.forEach(task => {
         }
     })
 });
+
+/**
+ * ===============================
+ *      CORREÇÕES A FAZER
+ * ===============================
+ * corrigir data duplicada para tasks com mesmos horários e dias diferentes 
+ * 
+ * */
+
+
+/**
+ * ==========================================
+ *  Planejamento de Done, undone, justify
+ * ==========================================
+ * deverá ser criado uum array de booleans
+ * o tamanho da array será relatica á quantidade de dias da array "dias"
+ * todos os valores se iniciarão em false
+ * 
+ * ==== Renderização Provisória =====
+ * Tasks undone & futuras = cor normal 
+ * Tasks done = cor transparente + icone V 
+ * Tasks justified = cor preta + (pesquisar icone) 
+ * Tasks vencidas = cor vermelha +  icone X
+ * 
+ * ===== Restrições =====
+ * Não será possível marca uma Task vencida como Done (true), só será possivel justifica-lá
+ * Só será possível justificar tarefas vencidas e atuais, não tarefas da data do dia seguinte em diante
+ * Não será possível marcar qualquer tarefa do dia seguinte como Done(true) somente a tarefa da data atual
+ * 
+ * ==== Ideias ====
+ * Deixar as tarefas do dia atual com um efeito e animação (como se estivesse brilhando)
+*/
+ 
 
 // Renderização HTML do calendário (Semana atual)
 const diasCalendario = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
@@ -62,11 +96,12 @@ for(let i = 0, dia = ultimoDiaMesPassado - 6; i < 7; i++) {
 
 ultimosDiasMesPassado = ultimosDiasMesPassado.splice(listaSemana(0).length);
 
-const semana = listaSemana(1) // Tornar isso dinâmico mas tarde (o Date escolherá automáticamente de acordo com a semana atual)
-// SE SETAR semana com parâmetro === 5 resultará em erro
+// limitar até 5
+const semana = listaSemana(numeroSemana(hoje));
 
 thead.innerHTML = `<th></th>`;
 
+let diaSMesSeguinte = 1; // Melhorar isso mas tarde
 let novoIndex = 0;
 diasCalendario.map((dia, index) => {
     let data;
@@ -74,10 +109,17 @@ diasCalendario.map((dia, index) => {
         data = ultimosDiasMesPassado[index];
     }else {
         const objSemana = semana[novoIndex];
-        data = objSemana.dia; //CORRIGIR ESTE ERRO AQUI
+        if(objSemana) {
+            data = objSemana.dia; //CORRIGIR ESTE ERRO AQUI
+
+        }else {
+            data = diaSMesSeguinte; //CORRIGIR ESTE ERRO AQUI
+            diaSMesSeguinte++;
+        }
         novoIndex ++;
     }
-    thead.innerHTML+=`<th>${dia} ${data}</th>`;
+    // Verifica se a data é igual á data atual para aplicar a classe "hoje"
+    thead.innerHTML+=`<th class="${data === hoje ? 'hoje' : ''}">${dia} ${data}</th>`;
 })
 
 tabela.appendChild(thead)
@@ -88,18 +130,6 @@ function numeroSemana(dia) {
     const ajusteDia = dia + offsetInicio ;
     return Math.floor(ajusteDia / 7);
 }
-
-// Próximo Passo: 
-// adicionar dinamicamente novas rows para a variavel "HTML" tabela
-// As rows serão adicionadas de acordo com a quantidade de horarios de cada task
-//(OK) criar um método para acessar o objeto task através do id de propriedades "tasks" do objeto semana[index].objeto.tasks 
-
-/**
- * (OK) as tasks deverão ser exibidas de acordo com seu determinado dia (task.dias[index] === diasSemana[index].obj.dia)
- * (OK) atenção: os dias devem ser de acordo com os dias da semanta atual
- * (OK) Detectar os horários: 
- * (OK) exibir as rows + horarios em ordem crescente
- */
 
 const tasksSemanaAtual = new Set();
 
@@ -117,21 +147,37 @@ tasksSemanaAtual.forEach(taskId => {
 
 
 let index = 7;
-horariosSemanaAtual = horariosSemanaAtual.sort();
+horariosSemanaAtual = horariosSemanaAtual.sort(((a, b) => a - b));
+
+function formatHoras(num) {
+    num = String(num);
+    
+    if(num.length === 3) {
+        return  '0'+num.charAt(0)+':'+num.substring(1);
+    }
+
+    let mask = '00:00';
+    for(let i = 0; i < num.length; i++) {
+        mask = mask.replace('0', num[i])
+    }
+
+    return mask;
+    
+}
+
 // renderizar as rows HTML de horarios
 horariosSemanaAtual.forEach(hora => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td class="hora">${hora}</td>`;
+    tr.innerHTML = `<td class="hora">${formatHoras(hora)}</td>`;
 
     if(semana.length < index ) {
         for(let i = 0; i < ultimosDiasMesPassado.length; i++)
         tr.innerHTML+=`<td></td>`;
         index++;
-        console.log(index)
     }
 
     semana.forEach(obj => {
-        // Descobrir a task correspondente áo do horário iterado
+        // Descobrir a task correspondente ao do horário iterado
         let taskAtual = false;
         let taskName = '';
 
@@ -148,29 +194,8 @@ horariosSemanaAtual.forEach(hora => {
         }
 
         tr.innerHTML += `<td class="task" style="background: ${taskAtual ? taskAtual.color : ''}">${taskName}</td>`;
-        
-    
 
     })
 
-
     tabela.appendChild(tr);
-})
-
-console.log(Task.getTasks())
-
-// Variáves que serão utilizadas
-// console.log(tabela);
-// console.log(semana)
-// console.log(diasSemana)
-// console.log(tasks)
-
-// const task = obj.tasks.reduce((acc, item) => {
-//     const taskAtual = Task.getTask(item)
-//     if(taskAtual.horarios.find(itemHora => itemHora === hora)) {
-//         console.log(taskAtual.horarios.find(itemHora => console.log(itemHora === hora)))
-//         // console.log(taskAtual.horarios.find(horar => horar === hora))
-//         console.log(taskAtual+" "+hora)
-//         return acc = Task.getTask(item);
-//     }
-// },{})
+});

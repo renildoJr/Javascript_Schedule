@@ -26,6 +26,8 @@ table {
     border-spacing: 0;
 }
 
+
+
 table th,
 table td {
     border: 1px solid;
@@ -47,21 +49,32 @@ table th.dark {
     background: rgb(49, 44, 44);
 }
 
+table th {
+    color: #696868
+}
+
 table td.hora {
     background: #754d4d;
     color: #ffffff;
 
 }
-table td.hora {
-    color: #ffffff;
-}
 
 table td.task {
+    background: #424242;
     cursor: pointer;
 }
 
 table th.prev-month {
     background: #000
+}
+
+table th.hoje, 
+table td.hoje {
+    /* border-color:s red; */
+    /* background:  */
+    font-weight: 900;
+    background: #000;
+    color: white;
 }
 
 
