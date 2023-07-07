@@ -18,9 +18,6 @@ for(let d = 1, dia = primeiroDiaSemana; d <= ultimoDia; d++) {
 }
 
 const tasks = Task.getTasks();
-// Task.newTask('watch tv', [1200, 1800], [6, 12, 23, 8], 'orange');
-// Task.newTask('play game', [2300], [1, 3, 15, 18, 6], 'blue');
-// Task.newTask('sleep', [100], [2, 5, 8, 9, 16], 'blue');
 
 tasks.forEach(task => {
     task.dias.forEach(dia => {
@@ -37,7 +34,7 @@ tasks.forEach(task => {
  * ===============================
  *      CORREÇÕES A FAZER
  * ===============================
- * corrigir data duplicada para tasks com mesmos horários e dias diferentes 
+ * corrigir rows duplicadas para tasks com mesmos horários e dias diferentes 
  * 
  * */
 
@@ -46,15 +43,20 @@ tasks.forEach(task => {
  * ==========================================
  *  Planejamento de Done, undone, justify
  * ==========================================
- * deverá ser criado uum array de booleans
- * o tamanho da array será relatica á quantidade de dias da array "dias"
- * todos os valores se iniciarão em false
+ * deverá ser criado um array de booleans
+ * sempre quando clicar em uma task, de início ela mudará de cor (done = transparente) e a array done da task terá o valor true, relativo á data da task da task,
+ * ex: dias = [4, 5, 6, 9, 12, 13]  done = [false, true, true] // neste exemplo a task do dia 4 não foi realizada, mas nos dias 5 e 6 foram feitas.
+ * a tarefa só receberá o valor false apartir das 00:00 do dia seguinte, caso não tenha sido realizada, do contrário, receberá true imediatamente após o clique.
+ * Para Justify e undone, undone não terá influência alguma na array done da task. A justified adicionará o valor do dia ex: dias = [4, 5, 6, 9, ...] 
+ * done = [true, false, 6, true] a task do dia 4 foi realizada, 5 não foi, "A DO DIA  6 FOI JUSTIFICADA" (recebeu o valor da data), e do dia 9 foi realizada.
+ * caso exista mais de uma task da mesma no mesmo dia, o valor deverá ser armazenado em uma array, ex: done = [true, false, [true, true, false], false]
  * 
  * ==== Renderização Provisória =====
- * Tasks undone & futuras = cor normal 
- * Tasks done = cor transparente + icone V 
- * Tasks justified = cor preta + (pesquisar icone) 
- * Tasks vencidas = cor vermelha +  icone X
+ * Tasks undone & futuras = cor normal (sem valor)
+ * Tasks done = cor transparente + icone V  (true)
+ * Tasks justified = cor preta + (pesquisar icone) (colocar valor refente ao dia da justificativa) 
+ * Tasks vencidas = cor vermelha +  icone X (false)
+ * 
  * 
  * ===== Restrições =====
  * Não será possível marca uma Task vencida como Done (true), só será possivel justifica-lá
@@ -63,6 +65,12 @@ tasks.forEach(task => {
  * 
  * ==== Ideias ====
  * Deixar as tarefas do dia atual com um efeito e animação (como se estivesse brilhando)
+ * Terá uma opção de backup das tarefas e seus estados. Irá salvar o arquivo do local stroage em string e o usuário poderá baixar
+ * Quando o usuário adicionar uma nova task e tentar adicionar no mesmo horário que outras, ele terá que escolher outro horário e o horário será destacado como "vermelho"
+ * 
+ * ===== lógicas adicionais =====
+ * localstorage armazena a variável "diaSeguinte = hoje + 1" (fazer no contexto do Date() para evitar dia 32 ou coisa parecida), caso "hoje === diaSeguinte (do localstorage)",
+ * as as tarefas não feitas terão o valor de false.
 */
  
 
@@ -98,6 +106,7 @@ ultimosDiasMesPassado = ultimosDiasMesPassado.splice(listaSemana(0).length);
 
 // limitar até 5
 const semana = listaSemana(numeroSemana(hoje));
+console.log(semana)
 
 thead.innerHTML = `<th></th>`;
 
@@ -178,6 +187,7 @@ horariosSemanaAtual.forEach(hora => {
 
     semana.forEach(obj => {
         // Descobrir a task correspondente ao do horário iterado
+
         let taskAtual = false;
         let taskName = '';
 
@@ -191,11 +201,39 @@ horariosSemanaAtual.forEach(hora => {
 
         if(taskAtual) {
             taskName = taskAtual.name;
+            console.log(taskAtual.status.forEach(status.dia === hoje)) // COntinyar daqui
         }
 
-        tr.innerHTML += `<td class="task" style="background: ${taskAtual ? taskAtual.color : ''}">${taskName}</td>`;
 
+        // const status = taskAtual[0].status ? taskAtual.status.status : null; // mudar para done
+        console.log(status)
+        const td = document.createElement('td');
+        td.setAttribute('class', 'task');
+        td.setAttribute('style', `background:  ${taskAtual ? taskAtual.color : ''}`);
+        td.innerHTML = taskName;
+        td.addEventListener('click', ()=>{teste(obj.dia, taskAtual, td)});
+        tr.appendChild(td);
     })
 
     tabela.appendChild(tr);
 });
+
+function teste(dia, task, el) {
+    if(task) {
+        if(dia === hoje) {
+            task.status.push({dia: 6, status: true}); 
+            Task.editTask(task.id, task.name, task.horarios, task.dias, task.status, task.color);
+            console.log(el.style.backgroundColor=task.color+"40");
+        }
+    }else {
+        console.log('adicionar nova task');
+    }
+
+    // return location.reload();
+}
+
+console.log(tasks)
+// localStorage.clear()
+// Task.newTask('watch tv', [1200, 1800], [7, 12, 23, 8], [{dia: null, done: null}], '#ab4e91');
+// Task.newTask('play game', [2300,100], [3, 7, 15, 18, 6], [{dia: null, done: null}], '#21d942');
+// Task.newTask('sleep', [100], [2, 5, 8, 9, 16, 7], [{dia: null, done: null}], '#70cbba');

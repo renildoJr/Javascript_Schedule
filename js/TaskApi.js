@@ -6,7 +6,7 @@ export class Task {
         return JSON.parse(tasks) || [];
     }
 
-    static newTask(name = 'unknown', horarios = [], dias = [], color = this.defaultColor, updatedId = null) {
+    static newTask(name = 'unknown', horarios = [], dias = [], status = [], color = this.defaultColor, updatedId = null) {
         const tasks = this.getTasks();
         // validar para ver se o nome da tarefa já existe no localstorage
         // validar para ver se há confilito de horarios + dias com outras tarefas existentes
@@ -16,10 +16,8 @@ export class Task {
             name,
             horarios,
             dias,
+            status,
             color
-            // 0 false 
-            // 1 true
-            // 2 
         };
 
         tasks.push(newTask);
@@ -34,7 +32,11 @@ export class Task {
         return task;
     }
 
-    static editTask(id, name, horarios, dias, color) {
+    // click event 
+    // editTask(931, 'go surfin', [620], [8, 15, 23], [true], '#d43f38')
+
+
+    static editTask(id, name, horarios, dias, status, color) {
         const tasks = this.getTasks();
         console.log(tasks);
         const task = this.getTask(id);
@@ -42,7 +44,7 @@ export class Task {
         this.removeTask(id);
        
         // add new
-        return this.newTask(name, horarios, dias, color, id);
+        return this.newTask(name, horarios, dias, status, color, id);
 
     }
 
