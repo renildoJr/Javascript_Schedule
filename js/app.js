@@ -7,6 +7,7 @@ const ultimoDia = new Date(date.getFullYear(), mesAtual + 1, 0).getDate();
 const primeiroDiaSemana = new Date(date.getFullYear(), mesAtual).getDay();
 const diasSemana = [[], [], [], [], [], [], []];
 const hoje = date.getDate();
+// const hoje = 2;
 
 for(let d = 1, dia = primeiroDiaSemana; d <= ultimoDia; d++) {
     diasSemana[dia].push({dia: d, semana: numeroSemana(d) , tasks: []})
@@ -31,6 +32,12 @@ tasks.forEach(task => {
 });
 
 /**
+ * 
+ * =================
+ *      Dúvidas
+ * =================
+ * Se ficar alguns dias sem mexer no app, as alterações serão serão feitas automaticamente em relação as tasks não feitas?
+ * 
  * ===============================
  *      CORREÇÕES A FAZER
  * ===============================
@@ -43,8 +50,8 @@ tasks.forEach(task => {
  * ==========================================
  *  Planejamento de Done, undone, justify
  * ==========================================
- * deverá ser criado um array de booleans
- * sempre quando clicar em uma task, de início ela mudará de cor (done = transparente) e a array done da task terá o valor true, relativo á data da task da task,
+ * (OK) deverá ser criado um array de booleans
+ * (OK) sempre quando clicar em uma task, de início ela mudará de cor (done = transparente) e a array done da task terá o valor true, relativo á data da task da task,
  * ex: dias = [4, 5, 6, 9, 12, 13]  done = [false, true, true] // neste exemplo a task do dia 4 não foi realizada, mas nos dias 5 e 6 foram feitas.
  * a tarefa só receberá o valor false apartir das 00:00 do dia seguinte, caso não tenha sido realizada, do contrário, receberá true imediatamente após o clique.
  * Para Justify e undone, undone não terá influência alguma na array done da task. A justified adicionará o valor do dia ex: dias = [4, 5, 6, 9, ...] 
@@ -106,7 +113,6 @@ ultimosDiasMesPassado = ultimosDiasMesPassado.splice(listaSemana(0).length);
 
 // limitar até 5
 const semana = listaSemana(numeroSemana(hoje));
-console.log(semana)
 
 thead.innerHTML = `<th></th>`;
 
@@ -185,11 +191,12 @@ horariosSemanaAtual.forEach(hora => {
         index++;
     }
 
-    semana.forEach(obj => {
+    semana.forEach((obj, index) => {
         // Descobrir a task correspondente ao do horário iterado
-
         let taskAtual = false;
         let taskName = '';
+        let done = null;
+        let notDone = null;
 
         for(const taskId of obj.tasks) {
             const task = Task.getTask(taskId);
@@ -201,29 +208,37 @@ horariosSemanaAtual.forEach(hora => {
 
         if(taskAtual) {
             taskName = taskAtual.name;
-            console.log(taskAtual.status.forEach(status.dia === hoje)) // COntinyar daqui
+            done = taskAtual.status.find(status => (status.dia === semana[index].dia) && (status.done === true)) || null;
+            notDone = taskAtual.status.find(status => (status.dia === semana[index].dia) && (status.done === false)) || null;
         }
 
-
         // const status = taskAtual[0].status ? taskAtual.status.status : null; // mudar para done
-        console.log(status)
         const td = document.createElement('td');
         td.setAttribute('class', 'task');
-        td.setAttribute('style', `background:  ${taskAtual ? taskAtual.color : ''}`);
+        td.setAttribute('style', `background: ${taskAtual ? taskAtual.color : ''}`);
+
+        if(done) {
+            td.setAttribute('style', `background: #21d942`);
+        }else if(notDone) {
+            td.setAttribute('style', 'background: red');
+        }
+
         td.innerHTML = taskName;
-        td.addEventListener('click', ()=>{teste(obj.dia, taskAtual, td)});
+        td.addEventListener('click', ()=>{teste(obj.dia, taskAtual)});
         tr.appendChild(td);
     })
 
     tabela.appendChild(tr);
 });
 
-function teste(dia, task, el) {
+function teste(dia, task) {
     if(task) {
-        if(dia === hoje) {
-            task.status.push({dia: 6, status: true}); 
+        const statusExiste = task.status.find(stat => (stat.dia === dia) && stat.done !== null);
+        if(statusExiste) {
+            console.log('Não é possível marcar esta tarefa novamente');
+        }else if(dia === hoje) {
+            task.status.push({dia: hoje, done: true}); 
             Task.editTask(task.id, task.name, task.horarios, task.dias, task.status, task.color);
-            console.log(el.style.backgroundColor=task.color+"40");
         }
     }else {
         console.log('adicionar nova task');
@@ -232,8 +247,21 @@ function teste(dia, task, el) {
     // return location.reload();
 }
 
-console.log(tasks)
+console.log(hoje)
+console.log(hoje + 1)
+// localStorage armazena hoje + 1 (amanhã)
+
+if(hoje === 1) {
+    //1. armazenar relatório do mês quando localStorage hoje === 1
+
+    //2. zera o array da propriedade status das tasks após o envio do relatório mensal
+    tasks.forEach(task => Task.editTask(task.id, task.name, task.horarios, task.dias, task.status = [{dia: hoje, done: null}], task.color));
+}
+
+
 // localStorage.clear()
-// Task.newTask('watch tv', [1200, 1800], [7, 12, 23, 8], [{dia: null, done: null}], '#ab4e91');
-// Task.newTask('play game', [2300,100], [3, 7, 15, 18, 6], [{dia: null, done: null}], '#21d942');
-// Task.newTask('sleep', [100], [2, 5, 8, 9, 16, 7], [{dia: null, done: null}], '#70cbba');
+// Task.newTask('watch tv', [1200], [7, 12, 23, 8], [{dia: hoje, done: null}], '#ab4e91');
+// Task.newTask('play game', [2300], [3, 15, 18, 6], [{dia: hoje, done: null}], '#8ef3f3');
+// Task.newTask('sleep', [100], [2, 5, 8, 9, 16, 7], [{dia: hoje, done: null}], '#70cbba');
+
+console.log(tasks)
