@@ -1,0 +1,51 @@
+
+/**
+ * 
+ * =================
+ *      Dúvidas
+ * =================
+ * Se ficar alguns dias sem mexer no app, as alterações serão serão feitas automaticamente em relação as tasks não feitas?
+ * 
+ * ===============================
+ *      CORREÇÕES A FAZER
+ * ===============================
+ * corrigir rows duplicadas para tasks com mesmos horários e dias diferentes 
+ *
+ * 
+ * */
+
+
+/**
+ * ==========================================
+ *  Planejamento de Done, undone, justify
+ * ==========================================
+ * (OK) deverá ser criado um array de booleans
+ * (OK) sempre quando clicar em uma task, de início ela mudará de cor (done = transparente) e a array done da task terá o valor true, relativo á data da task da task,
+ * ex: dias = [4, 5, 6, 9, 12, 13]  done = [false, true, true] // neste exemplo a task do dia 4 não foi realizada, mas nos dias 5 e 6 foram feitas.
+ * a tarefa só receberá o valor false apartir das 00:00 do dia seguinte, caso não tenha sido realizada, do contrário, receberá true imediatamente após o clique.
+ * Para Justify e undone, undone não terá influência alguma na array done da task. A justified adicionará o valor do dia ex: dias = [4, 5, 6, 9, ...] 
+ * done = [true, false, 6, true] a task do dia 4 foi realizada, 5 não foi, "A DO DIA  6 FOI JUSTIFICADA" (recebeu o valor da data), e do dia 9 foi realizada.
+ * caso exista mais de uma task da mesma no mesmo dia, o valor deverá ser armazenado em uma array, ex: done = [true, false, [true, true, false], false]
+ * 
+ * ==== Renderização Provisória =====
+ * Tasks undone & futuras = cor normal (sem valor)
+ * Tasks done = cor transparente + icone V  (true)
+ * Tasks justified = cor preta + (pesquisar icone) (colocar valor refente ao dia da justificativa) 
+ * Tasks vencidas = cor vermelha +  icone X (false)
+ * 
+ * 
+ * ===== Restrições =====
+ * Não será possível marca uma Task vencida como Done (true), só será possivel justifica-lá
+ * Só será possível justificar tarefas vencidas e atuais, não tarefas da data do dia seguinte em diante
+ * Não será possível marcar qualquer tarefa do dia seguinte como Done(true) somente a tarefa da data atual
+ * Não será possível agendar dias anteriores ao dia atual (somente atual em diante)
+ * 
+ * ==== Ideias ====
+ * Deixar as tarefas do dia atual com um efeito e animação (como se estivesse brilhando)
+ * Terá uma opção de backup das tarefas e seus estados. Irá salvar o arquivo do local stroage em string e o usuário poderá baixar
+ * Quando o usuário adicionar uma nova task e tentar adicionar no mesmo horário que outras, ele terá que escolher outro horário e o horário será destacado como "vermelho"
+ * 
+ * ===== lógicas adicionais =====
+ * localstorage armazena a variável "diaSeguinte = hoje + 1" (fazer no contexto do Date() para evitar dia 32 ou coisa parecida), caso "hoje === diaSeguinte (do localstorage)",
+ * as as tarefas não feitas terão o valor de false.
+*/

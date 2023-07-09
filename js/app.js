@@ -1,13 +1,14 @@
 'use strict';
 import { Task } from "./TaskApi.js";
-
+const tasks = Task.getTasks();
 const date = new Date();
 const mesAtual = new Date(date.getFullYear(), date.getMonth()).getMonth();
 const ultimoDia = new Date(date.getFullYear(), mesAtual + 1, 0).getDate();
 const primeiroDiaSemana = new Date(date.getFullYear(), mesAtual).getDay();
 const diasSemana = [[], [], [], [], [], [], []];
 const hoje = date.getDate();
-// const hoje = 2;
+
+PROVresetTasks()
 
 for(let d = 1, dia = primeiroDiaSemana; d <= ultimoDia; d++) {
     diasSemana[dia].push({dia: d, semana: numeroSemana(d) , tasks: []})
@@ -17,8 +18,6 @@ for(let d = 1, dia = primeiroDiaSemana; d <= ultimoDia; d++) {
         dia ++;
     }
 }
-
-const tasks = Task.getTasks();
 
 tasks.forEach(task => {
     task.dias.forEach(dia => {
@@ -31,75 +30,12 @@ tasks.forEach(task => {
     })
 });
 
-/**
- * 
- * =================
- *      Dúvidas
- * =================
- * Se ficar alguns dias sem mexer no app, as alterações serão serão feitas automaticamente em relação as tasks não feitas?
- * 
- * ===============================
- *      CORREÇÕES A FAZER
- * ===============================
- * corrigir rows duplicadas para tasks com mesmos horários e dias diferentes 
- * 
- * */
-
-
-/**
- * ==========================================
- *  Planejamento de Done, undone, justify
- * ==========================================
- * (OK) deverá ser criado um array de booleans
- * (OK) sempre quando clicar em uma task, de início ela mudará de cor (done = transparente) e a array done da task terá o valor true, relativo á data da task da task,
- * ex: dias = [4, 5, 6, 9, 12, 13]  done = [false, true, true] // neste exemplo a task do dia 4 não foi realizada, mas nos dias 5 e 6 foram feitas.
- * a tarefa só receberá o valor false apartir das 00:00 do dia seguinte, caso não tenha sido realizada, do contrário, receberá true imediatamente após o clique.
- * Para Justify e undone, undone não terá influência alguma na array done da task. A justified adicionará o valor do dia ex: dias = [4, 5, 6, 9, ...] 
- * done = [true, false, 6, true] a task do dia 4 foi realizada, 5 não foi, "A DO DIA  6 FOI JUSTIFICADA" (recebeu o valor da data), e do dia 9 foi realizada.
- * caso exista mais de uma task da mesma no mesmo dia, o valor deverá ser armazenado em uma array, ex: done = [true, false, [true, true, false], false]
- * 
- * ==== Renderização Provisória =====
- * Tasks undone & futuras = cor normal (sem valor)
- * Tasks done = cor transparente + icone V  (true)
- * Tasks justified = cor preta + (pesquisar icone) (colocar valor refente ao dia da justificativa) 
- * Tasks vencidas = cor vermelha +  icone X (false)
- * 
- * 
- * ===== Restrições =====
- * Não será possível marca uma Task vencida como Done (true), só será possivel justifica-lá
- * Só será possível justificar tarefas vencidas e atuais, não tarefas da data do dia seguinte em diante
- * Não será possível marcar qualquer tarefa do dia seguinte como Done(true) somente a tarefa da data atual
- * 
- * ==== Ideias ====
- * Deixar as tarefas do dia atual com um efeito e animação (como se estivesse brilhando)
- * Terá uma opção de backup das tarefas e seus estados. Irá salvar o arquivo do local stroage em string e o usuário poderá baixar
- * Quando o usuário adicionar uma nova task e tentar adicionar no mesmo horário que outras, ele terá que escolher outro horário e o horário será destacado como "vermelho"
- * 
- * ===== lógicas adicionais =====
- * localstorage armazena a variável "diaSeguinte = hoje + 1" (fazer no contexto do Date() para evitar dia 32 ou coisa parecida), caso "hoje === diaSeguinte (do localstorage)",
- * as as tarefas não feitas terão o valor de false.
-*/
- 
-
 // Renderização HTML do calendário (Semana atual)
 const diasCalendario = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-
 const tabela = document.querySelector('table');
 const thead = document.createElement('tr');
 
-function listaSemana(numSem = 0) {
-    const semana = [];
-    for(const array of diasSemana) {
-        const obj = array.find(obj => obj.semana === numSem);
-        if(obj) {
-            semana.push(obj);
-        }
-    }
-    return semana;
-}
-
 // Renderização HTML do calendário (Semana atual)
-
 const ultimoDiaMesPassado = new Date(date.getFullYear(), mesAtual, 0).getDate();
 
 let ultimosDiasMesPassado = [];
@@ -139,18 +75,12 @@ diasCalendario.map((dia, index) => {
 
 tabela.appendChild(thead)
 
-// Esta função descobre a semana da data especificada
-function numeroSemana(dia) {
-    const offsetInicio = (primeiroDiaSemana + 6) % 7; // Offset para o primeiro dia da semana
-    const ajusteDia = dia + offsetInicio ;
-    return Math.floor(ajusteDia / 7);
-}
-
 const tasksSemanaAtual = new Set();
 
 semana.forEach(obj => {
     obj.tasks.forEach(taskId => tasksSemanaAtual.add(taskId));
 })
+
 
 let horariosSemanaAtual = [];
 
@@ -160,25 +90,8 @@ tasksSemanaAtual.forEach(taskId => {
     task.horarios.forEach(hora => {horariosSemanaAtual.push(hora)})
 });
 
-
 let index = 7;
 horariosSemanaAtual = horariosSemanaAtual.sort(((a, b) => a - b));
-
-function formatHoras(num) {
-    num = String(num);
-    
-    if(num.length === 3) {
-        return  '0'+num.charAt(0)+':'+num.substring(1);
-    }
-
-    let mask = '00:00';
-    for(let i = 0; i < num.length; i++) {
-        mask = mask.replace('0', num[i])
-    }
-
-    return mask;
-    
-}
 
 // renderizar as rows HTML de horarios
 horariosSemanaAtual.forEach(hora => {
@@ -212,7 +125,6 @@ horariosSemanaAtual.forEach(hora => {
             notDone = taskAtual.status.find(status => (status.dia === semana[index].dia) && (status.done === false)) || null;
         }
 
-        // const status = taskAtual[0].status ? taskAtual.status.status : null; // mudar para done
         const td = document.createElement('td');
         td.setAttribute('class', 'task');
         td.setAttribute('style', `background: ${taskAtual ? taskAtual.color : ''}`);
@@ -231,6 +143,53 @@ horariosSemanaAtual.forEach(hora => {
     tabela.appendChild(tr);
 });
 
+
+// console.log(tasks)
+
+// if(hoje === 1) {
+//     //1. armazenar relatório do mês quando localStorage hoje === 1
+
+//     //2. zera o array da propriedade status das tasks após o envio do relatório mensal
+//     tasks.forEach(task => Task.editTask(task.id, task.name, task.horarios, task.dias, task.status = [{dia: hoje, done: null}], task.color));
+// }
+
+
+// localStorage.clear()
+// Task.newTask('watch tv', [1200], [7, 8, 12, 23], [], '#ab4e91');
+// Task.newTask('play game', [2300], [3, 6, 15, 18], [], '#8ef3f3');
+// Task.newTask('sleep', [100], [2, 5, 7, 8, 9, 16], [], '#70cbba');
+
+// FUNÇÕES
+
+function PROVresetTasks() {
+    // OBS: ESTE CÓDIGO SÓ DEVERÁ SER EXECUTADO UMA SÓ VEZ, E SEMPRE QUANDO FOR ADICIONADA UMA NOVA TASK
+    // ESTE CÓDIGO DEVERÁ SER ADAPITADO PARA UMA TASK SÓ (A NOVA TASK CRIADA), AO INVÉS DE TODAS
+    // Adiciona status null relativo aos dias nas novas tasks
+    // tasks.forEach(task => {
+    //     task.dias.forEach(dia => {
+    //         if(!task.status.find(stat => stat.dia === dia && stat.done === false)) {
+    //             task.status.push({dia: dia, done: null});
+    //             Task.editTask(task.id, task.name, task.horarios, task.dias, task.status, task.color);
+    //         }else {
+    //             console.log('já existe')
+    //         }      
+    //     });
+    // });
+
+    // Sempre que o dia é atualizado, as tasks não realizadas recebem o valor false
+    tasks.forEach(task => {
+        const newStatus = [];
+        task.status.forEach((status) => {
+            if((status.dia < hoje && status.done === null)) {
+                newStatus.push({dia: status.dia, done: false});
+            }else {
+                newStatus.push(status)
+            }
+        });
+        Task.editTask(task.id, task.name, task.horarios, task.dias, newStatus, task.color);
+    });
+}
+
 function teste(dia, task) {
     if(task) {
         const statusExiste = task.status.find(stat => (stat.dia === dia) && stat.done !== null);
@@ -239,29 +198,43 @@ function teste(dia, task) {
         }else if(dia === hoje) {
             task.status.push({dia: hoje, done: true}); 
             Task.editTask(task.id, task.name, task.horarios, task.dias, task.status, task.color);
+            return location.reload();
         }
     }else {
         console.log('adicionar nova task');
     }
 
-    // return location.reload();
 }
 
-console.log(hoje)
-console.log(hoje + 1)
-// localStorage armazena hoje + 1 (amanhã)
-
-if(hoje === 1) {
-    //1. armazenar relatório do mês quando localStorage hoje === 1
-
-    //2. zera o array da propriedade status das tasks após o envio do relatório mensal
-    tasks.forEach(task => Task.editTask(task.id, task.name, task.horarios, task.dias, task.status = [{dia: hoje, done: null}], task.color));
+function listaSemana(numSem = 0) {
+    const semana = [];
+    for(const array of diasSemana) {
+        const obj = array.find(obj => obj.semana === numSem);
+        if(obj) {
+            semana.push(obj);
+        }
+    }
+    return semana;
 }
 
+// Esta função descobre a semana da data especificada
+function numeroSemana(dia) {
+    const offsetInicio = (primeiroDiaSemana + 6) % 7; // Offset para o primeiro dia da semana
+    const ajusteDia = dia + offsetInicio ;
+    return Math.floor(ajusteDia / 7);
+}
 
-// localStorage.clear()
-// Task.newTask('watch tv', [1200], [7, 12, 23, 8], [{dia: hoje, done: null}], '#ab4e91');
-// Task.newTask('play game', [2300], [3, 15, 18, 6], [{dia: hoje, done: null}], '#8ef3f3');
-// Task.newTask('sleep', [100], [2, 5, 8, 9, 16, 7], [{dia: hoje, done: null}], '#70cbba');
+function formatHoras(num) {
+    num = String(num);
+    
+    if(num.length === 3) {
+        return  '0'+num.charAt(0)+':'+num.substring(1);
+    }
 
-console.log(tasks)
+    let mask = '00:00';
+    for(let i = 0; i < num.length; i++) {
+        mask = mask.replace('0', num[i])
+    }
+
+    return mask;
+}
