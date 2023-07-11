@@ -24,6 +24,7 @@ for(let d = 1, dia = firstDayOfWeek; d <= lastDay; d++) {
     }
 }
 
+
 updateDailyStatus();
 
 // Salva as o ID das tarefas no array tasks (da variável weeks) correspondente aos dias de cada tarefa
@@ -158,9 +159,34 @@ renderCalendarHTML();
 
 // FUNÇÕES
 
+// CONTINUAR DAQUI
 function openModal(edit) {
-    const modal = document.createElement('div');
+    const modal_title = document.getElementById('modal_title');
+    const btn_close = document.getElementById('btn_close');
+    const btn_finish = document.getElementById('btn_finish');
+    const input_name = document.getElementById('input_taskName');
+    const input_hour = document.getElementById('input_taskHour');
+    const input_color = document.getElementById('input_taskColor');
+    const inputs_weekDays = Array.from(document.getElementsByClassName('input_day'));
+
+    btn_finish.addEventListener('click', () => {
+        // Teste
+        console.log(modal_title.textContent)
+        console.log(input_name.value);
+        console.log(input_hour.value);
+        console.log(input_color.value);
+
+        inputs_weekDays.forEach(check => {
+            if(check.checked) {
+                console.log(Number(check.value));
+            }
+        })
+
+    })
+
 }
+
+openModal();
 
 function updateDailyStatus() {
     // OBS: ESTE CÓDIGO SÓ DEVERÁ SER EXECUTADO UMA SÓ VEZ, E SEMPRE QUANDO FOR ADICIONADA UMA NOVA TASK
@@ -244,6 +270,8 @@ function formatHours(num) {
 
     return mask;
 }
+
+
 
 /**
  * Adicionar funcionalidades CRUD para o sistema
