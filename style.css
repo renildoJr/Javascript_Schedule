@@ -22,14 +22,14 @@
     gap: 2rem;
 }
 
-table {
+.tabelas-container table {
     border-spacing: 0;
 }
 
 
 
-table th,
-table td {
+.tabelas-container table th,
+.tabelas-container table td {
     border: 1px solid;
     min-width: 100px;
     height: 40px;
@@ -41,35 +41,35 @@ table td {
 }
 
 
-table th {
+.tabelas-container table th {
     background: rgba(146, 50, 50, 0.439);
 }
 
-table th.dark {
+.tabelas-container table th.dark {
     background: rgb(49, 44, 44);
 }
 
-table th {
+.tabelas-container table th {
     color: #696868
 }
 
-table td.hora {
+.tabelas-container table td.hora {
     background: #754d4d;
     color: #ffffff;
 
 }
 
-table td.task {
+.tabelas-container table td.task {
     background: #424242;
     cursor: pointer;
 }
 
-table th.prev-month {
+.tabelas-container table th.prev-month {
     background: #000
 }
 
-table th.hoje, 
-table td.hoje {
+.tabelas-container table th.today, 
+.tabelas-container table td.today {
     /* border-color:s red; */
     /* background:  */
     font-weight: 900;
@@ -108,28 +108,33 @@ table td.horario {
     font-size: 28px;
     font-weight: bold;
 }
-
+*/
 .overlay {
     width: 100%;
     height: 100%;
     position: absolute;
-    /* top: 0;
+    top: 0;
     left: 0;
-    /* background: rgba(0, 0, 0, 0.37);
+    background: rgba(0, 0, 0, 0.37);
     display: flex;
     align-items: center;
     justify-content: center;
-} */
+}
 
 .modal {
     flex-direction: column;
-    max-width: 380px;
+    min-width: 380px;
     padding: 1rem;
     box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.281);    
     background: white;
     position: relative;
     top: -100px;
     display: flex;
+}
+
+.modal table {
+    border: 1px solid;
+    min-width: 500px
 }
 
 .modal h2 {
@@ -170,11 +175,12 @@ table td.horario {
     background: #8b0404;
 }
 
-.modal .btn-confirmar {
+.modal .btn_primary {
     margin: 0 auto;
     background: #306bb8;
     color: white;
     padding: 10px;
+    cursor: pointer;
 }
 
 .modal button:hover {
@@ -193,7 +199,7 @@ table td.horario {
 }
 
 .overlay {
-    display: none;
+    /* display: none; */
 }
 
 .mostrar {
