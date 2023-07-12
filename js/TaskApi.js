@@ -6,23 +6,38 @@ export class Task {
         return JSON.parse(tasks) || [];
     }
 
-    static newTask(name = 'unknown', hour = 1000, days = [], status = [], color = this.defaultColor, updatedId = null) {
+    static newTask(name = '', hour = 1000, days = [], status = [], color = this.defaultColor, updatedId = null) {
         const tasks = this.getTasks();
-        // validar para ver se o nome da tarefa já existe no localstorage
+        const nameAlreadyExists = tasks.find(task => String(task.name).toLowerCase() === String(name).toLowerCase());
+        let message = '';
         // validar para ver se há confilito de horarios + dias com outras tarefas existentes
         
-        const newTask = {
-            id: updatedId !== null ? updatedId : Math.round(Math.random() * 1000),
-            name,
-            hour,
-            days,
-            status,
-            color
+        // Validações do Nome
+        if(name === '') {
+            message = 'Please insert a valid name';
         };
 
-        tasks.push(newTask);
-        save(tasks);
-        return newTask;
+        if(nameAlreadyExists) {
+            message = 'A task with the same name already exists, choose another name';   
+        };
+
+        if(!message) {
+            name = name.charAt(0).toUpperCase()+name.substring(1, name.length)
+            const newTask = {
+                id: updatedId !== null ? updatedId : Math.round(Math.random() * 1000),
+                name,
+                hour,
+                days,
+                status,
+                color
+            };
+    
+            tasks.push(newTask);
+            save(tasks);
+            return false;
+        }
+
+        return message;
     }
 
     static getTask(id) {
@@ -48,7 +63,8 @@ export class Task {
         }
 
         tasks.splice(tasks.indexOf(currentTask), 1);
-        return save(tasks);
+        save(tasks);
+        return true;
 
     }
 

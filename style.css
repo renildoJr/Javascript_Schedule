@@ -5,6 +5,15 @@
     font-family: sans-serif, Arial, Helvetica;
 }
 
+.btn_primary {
+    margin: 0 auto;
+    background: #306bb8;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+    border: none;
+}
+
 .container {
     margin: 0 auto;
     display: flex; 
@@ -116,7 +125,7 @@ table td.horario {
     top: 0;
     left: 0;
     background: rgba(0, 0, 0, 0.37);
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
 }
@@ -225,10 +234,14 @@ table td.horario {
 }
 
 .overlay {
-    /* display: none; */
+    display: none;
 }
 
 .mostrar {
     display: flex;
     padding: 50px;
+}
+
+.display {
+    display: flex;
 }

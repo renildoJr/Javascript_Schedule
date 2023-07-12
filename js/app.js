@@ -1,10 +1,3 @@
-// localStorage.clear()
-// Task.newTask('Go Bowling', 830, [18, 11, 15], [], 'orangered');
-// Task.newTask('Watch Anime', 925, [10, 11, 23, 12], [], '#000000') 
-// Task.newTask('watch tv', 1200, [7, 8, 12, 23], [], '#ab4e91');
-// Task.newTask('play game', 2300, [3, 6, 15, 18], [], '#8ef3f3');
-// Task.newTask('sleep', 100, [2, 5, 7, 8, 9, 16], [], '#70cbba');
-
 'use strict';
 import { Task } from "./TaskApi.js";
 const tasks = Task.getTasks();
@@ -13,7 +6,10 @@ const mesAtual = new Date(date.getFullYear(), date.getMonth()).getMonth();
 const lastDay = new Date(date.getFullYear(), mesAtual + 1, 0).getDate();
 const firstDayOfWeek = new Date(date.getFullYear(), mesAtual).getDay();
 const weeks = [[], [], [], [], [], [], []];
-const today = date.getDate();
+// const today = date.getDate();
+const today = 12;
+const overlay = document.querySelector('.overlay');
+const btn_addNewTask = document.getElementById('btn_new-task');
 
 for(let d = 1, dia = firstDayOfWeek; d <= lastDay; d++) {
     weeks[dia].push({dia: d, semana: getWeekNumber(d) , tasks: []})
@@ -24,7 +20,7 @@ for(let d = 1, dia = firstDayOfWeek; d <= lastDay; d++) {
     }
 }
 
-
+btn_addNewTask.addEventListener('click', ()=>{openModal('add')});
 updateDailyStatus();
 
 // Salva as o ID das tarefas no array tasks (da variável weeks) correspondente aos dias de cada tarefa
@@ -156,11 +152,9 @@ renderCalendarHTML();
 //     tasks.forEach(task => Task.editTask(task.id, task.name, task.horarios, task.dias, task.status = [{dia: today, done: null}], task.color));
 // }
 
-
 // FUNÇÕES
-
-// CONTINUAR DAQUI
-function openModal(edit) {
+function openModal(addNew) {
+    overlay.classList.add('display');
     const modal_title = document.getElementById('modal_title');
     const btn_close = document.getElementById('btn_close');
     const btn_finish = document.getElementById('btn_finish');
@@ -168,30 +162,67 @@ function openModal(edit) {
     const input_hour = document.getElementById('input_taskHour');
     const input_color = document.getElementById('input_taskColor');
     const inputs_weekDays = Array.from(document.getElementsByClassName('input_day'));
+    
+    btn_close.addEventListener('click', closeModal);
 
     btn_finish.addEventListener('click', () => {
-        // Teste
-        console.log(modal_title.textContent)
-        console.log(input_name.value);
-        console.log(input_hour.value);
-        console.log(input_color.value);
+        // choosenDays será últil para a função "edit" do CRUD
+        const choosenDays = [];
+        const days = [];
 
+        // Tratamento do Horário (ex: 16:28 => 1628, 00:42 => 42)
+        const hour = Number(input_hour.value.replace(':', ''));
+
+        // Tratamento dos Checkboxes
         inputs_weekDays.forEach(check => {
             if(check.checked) {
-                console.log(Number(check.value));
+                const ArrDayOfWeek = weeks[Number(check.value)];
+                choosenDays.push(Number(check.value));
+                ArrDayOfWeek.forEach(obj => {
+                    if(obj.dia >= today) {
+                        days.push(obj.dia);
+                    }
+                });
             }
         })
 
-    })
+        if(days.length < 1) {
+            return message(null, "Don't forget adding the days");
+        }
 
+        addNewTask(input_name.value, hour, days, input_color.value);
+    })
 }
 
-openModal();
+function closeModal() {
+    overlay.classList.remove('display');
+}
+
+function addNewTask(name, hour, days, color) {
+    const status =  [];
+    
+    // Gera status "null" para cada data do array "days"
+    days.forEach(day => status.push({day: day, done: null}));
+
+    // Salvando a nova task no localstorage
+    const newTask = Task.newTask(name, hour, days, status, color);
+
+    if(!newTask){
+        message(true, 'New task added successfully');
+        return closeModal();
+    }
+
+    message(false, newTask);
+    return false;
+}
+
+function message(type, msg) {
+    alert(msg)
+}
 
 function updateDailyStatus() {
-    // OBS: ESTE CÓDIGO SÓ DEVERÁ SER EXECUTADO UMA SÓ VEZ, E SEMPRE QUANDO FOR ADICIONADA UMA NOVA TASK
-    // ESTE CÓDIGO DEVERÁ SER ADAPITADO PARA UMA TASK SÓ (A NOVA TASK CRIADA), AO INVÉS DE TODAS
-    // Adiciona status null relativo aos dias nas novas tasks
+    // OBS: ESTE CÓDIGO SÓ DEVERÁ SER EXECUTADO UMA SÓ VEZ, PARA TODAS AS TASKS, QUANDO A VARIÁVEL "hoje" FOR IGUAL Á "1"
+    // Adiciona status null relativo aos dias nas tasks
     // tasks.forEach(task => {
     //     task.days.forEach(day => {
     //         if(!task.status.find(stat => stat.day === day && stat.done === false)) {
@@ -223,6 +254,8 @@ function taskClick(dia, task) {
         if(statusExiste) {
             console.log('Não é possível marcar esta tarefa novamente');
         }else if(dia === today) {
+            const remove = task.status.find(stat => stat.day === today && stat.done === null);
+            task.status.splice(task.status.indexOf(remove), 1);
             task.status.push({day: today, done: true}); 
             Task.editTask(task.id, task.name, task.hour, task.days, task.status, task.color);
             return location.reload();
@@ -271,10 +304,9 @@ function formatHours(num) {
     return mask;
 }
 
-
-
 /**
  * Adicionar funcionalidades CRUD para o sistema
  * Organizar/Refatorar código
  * Criar interface mais amigável
+ * criar um algoritimo para localizar a hora e associar a hora da task
  */
