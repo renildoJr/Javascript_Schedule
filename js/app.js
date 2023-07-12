@@ -6,8 +6,7 @@ const mesAtual = new Date(date.getFullYear(), date.getMonth()).getMonth();
 const lastDay = new Date(date.getFullYear(), mesAtual + 1, 0).getDate();
 const firstDayOfWeek = new Date(date.getFullYear(), mesAtual).getDay();
 const weeks = [[], [], [], [], [], [], []];
-// const today = date.getDate();
-const today = 12;
+const today = date.getDate();
 const overlay = document.querySelector('.overlay');
 const btn_addNewTask = document.getElementById('btn_new-task');
 
