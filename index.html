@@ -11,54 +11,7 @@
     <title>Daily Routine</title>
 </head>
 <body>
-    <div class="overlay">
-        <div class="modal">
-            <!-- btn voltar -->
-            <button class="btn fa-solid fa-xmark" id="btn_close"></button>
-            <h2 class="modal_title" id="modal_title">New Task</h2>
-            <label for="input_taskName">Name</label>
-            <input type="text" class="modal_input" id="input_taskName" required>
-            <label for="input_taskHour">Hour</label>
-            <input type="time" class="modal_input" id="input_taskHour" min="00:00" max="23:59" value="00:00">
-            <!-- 
-                Futuras Opções para Dias: 
-                * Repetir nos dias selecionados: (ex: seg, qua, qui)
-                * Selecionar dias manualmente 
-            -->
-            <h3>Days of Week</h3>
-            <div class="modal_options" id="select_days">
-                <table>
-                    <thead>
-                        <th><label for="input_check-sun">Sun</label></th>
-                        <th><label for="input_check-mon">Mon</label></th>
-                        <th><label for="input_check-tue">Tue</label></th>
-                        <th><label for="input_check-wed">Wed</label></th>
-                        <th><label for="input_check-thu">Thu</label></th>
-                        <th><label for="input_check-fri">Fri</label></th>
-                        <th><label for="input_check-sat">Sat</label></th>
-                    </thead>
-                    <tbody>
-                        <td><input class="modal_input input_day" type="checkbox" id="input_check-sun" value="0"></td>
-                        <td><input class="modal_input input_day" type="checkbox" id="input_check-mon" value="1"></td>
-                        <td><input class="modal_input input_day" type="checkbox" id="input_check-tue" value="2"></td>
-                        <td><input class="modal_input input_day" type="checkbox" id="input_check-wed" value="3"></td>
-                        <td><input class="modal_input input_day" type="checkbox" id="input_check-thu" value="4"></td>
-                        <td><input class="modal_input input_day" type="checkbox" id="input_check-fri" value="5"></td>
-                        <td><input class="modal_input input_day" type="checkbox" id="input_check-sat" value="6"></td>
-                    </tbody>
-                </table>
-
-            </div>
-            
-            <label for="input_taskColor">Color</label>
-            <input type="color" class="modal_input" id="input_taskColor">
-
-            <!-- dias  -->
-            <!-- prioridade 1-5 -->
-            <!-- categoria -->
-            <button class="btn btn_primary" id="btn_finish">Add Task</button>
-        </div>        
-    </div>
+    <div class="overlay display"></div>
 
     <div class="container">
         <!-- <h1 class="title">Daily Routine</h1>
