@@ -164,10 +164,8 @@ function openModal(context) {
     modal.setAttribute('class', 'modal');
 
     modalBtnClose.setAttribute('class', 'btn fa-solid fa-xmark');
-   
 
     modal.append(modalBtnClose, modalTitle);
-
 
     // New Task / Update Task
     const labelName = document.createElement('label');
@@ -179,7 +177,8 @@ function openModal(context) {
     const table = document.createElement('table');
     const thead = document.createElement('thead');
     const tbody = document.createElement('tbody');
-    const selectedDays = [1, 2, 5];
+    const selectedDays = []; // Esta variável estará preenchida, caso "context" for "update"
+
     // Ideia (fazer uma só vez)
     let title, btnEnd;
     // add task / Edit task
@@ -210,7 +209,7 @@ function openModal(context) {
     labelColor.setAttribute('for', 'inputColor');
     labelColor.textContent = 'Color';
 
-    calendarDays.forEach((day, index) => {
+    calendarDays.forEach(day => {
         const th = document.createElement('th');
         const td = document.createElement('td');
 
@@ -220,12 +219,49 @@ function openModal(context) {
         thead.appendChild(th);
         tbody.appendChild(td);
 
-    })
+    });
+    
+    const inputsCheck = Array.from(tbody.getElementsByTagName('input'));
+    
+    selectedDays.forEach(day => inputsCheck[day].setAttribute("checked", ''));
+    inputsCheck.forEach((inputCheck, index) => inputCheck.addEventListener('click', () => {
+        checkItem(inputCheck.checked, index);
+    }))
 
-    console.log(selectedDays)
+    function checkItem(bool, day) {
+        if(bool) {
+            return selectedDays.push(day);
+        }
+        return selectedDays.splice(selectedDays.indexOf(day), 1);
+    }
+
+    function confirm() {
+        if(!selectedDays.length) {
+            message(null, "Don't forget adding the day(s)");
+            // Escrever um código para focar as áreas dos inputs vazios
+        }else {
+            const allDays = []; // Adicionando as datas relativas aos dias da semana (selecionados nos checkboxes)
+            const hour = Number(inputHour.value.replace(':', '')); // Tratamento do Horário (ex: 16:28 => 1628, 00:42 => 42)
+            
+            selectedDays.forEach(day => {
+                weeks[day].forEach(date => {
+                    if(date.dia >= today) {
+                        allDays.push(date.dia);
+                    }
+                })
+            })
+
+            console.log(hour)
+
+            addNewTask(inputName.value, hour, allDays, inputColor.value);
+        }
+    }
+
+    modalBtnEnd.addEventListener('click', confirm);
 
     table.append(thead, tbody);
     modal.append(labelName, inputName, labelHour, inputHour, table, labelColor, inputColor);
+    // End Add && edit 
 
     // End
     modal.appendChild(modalBtnEnd);
@@ -238,91 +274,14 @@ function openModal(context) {
     
     // overlay.classList.add('display');
 
-    // overlay.innerHTML = `
-    //     <div class="modal">
-    //         <button class="btn fa-solid fa-xmark" id="btn_close" onclick="closeModal()"></button>
-    //         <h2 class="modal_title" id="modal_title">New Task</h2>
-    //         <label for="input_taskName">Name</label>
-    //         <input type="text" class="modal_input" id="input_taskName" required>
-    //         <label for="input_taskHour">Hour</label>
-    //         <input type="time" class="modal_input" id="input_taskHour" min="00:00" max="23:59" value="00:00">
-    //         <!-- 
-    //             Futuras Opções para Dias: 
-    //             * Repetir nos dias selecionados: (ex: seg, qua, qui)
-    //             * Selecionar dias manualmente 
-    //         -->
-    //         <h3>Days of Week</h3>
-    //         <div class="modal_options" id="select_days">
-    //             <table>
-    //                 <thead>
-    //                     <th><label for="input_check-sun">Sun</label></th>
-    //                     <th><label for="input_check-mon">Mon</label></th>
-    //                     <th><label for="input_check-tue">Tue</label></th>
-    //                     <th><label for="input_check-wed">Wed</label></th>
-    //                     <th><label for="input_check-thu">Thu</label></th>
-    //                     <th><label for="input_check-fri">Fri</label></th>
-    //                     <th><label for="input_check-sat">Sat</label></th>
-    //                 </thead>
-    //                 <tbody>
-    //                     <td><input class="modal_input input_day" type="checkbox" id="input_check-sun" value="0"></td>
-    //                     <td><input class="modal_input input_day" type="checkbox" id="input_check-mon" value="1"></td>
-    //                     <td><input class="modal_input input_day" type="checkbox" id="input_check-tue" value="2"></td>
-    //                     <td><input class="modal_input input_day" type="checkbox" id="input_check-wed" value="3"></td>
-    //                     <td><input class="modal_input input_day" type="checkbox" id="input_check-thu" value="4"></td>
-    //                     <td><input class="modal_input input_day" type="checkbox" id="input_check-fri" value="5"></td>
-    //                     <td><input class="modal_input input_day" type="checkbox" id="input_check-sat" value="6"></td>
-    //                 </tbody>
-    //             </table>
 
-    //         </div>
-            
-    //         <label for="input_taskColor">Color</label>
-    //         <input type="color" class="modal_input" id="input_taskColor">
+   
 
     //         <!-- dias  -->
     //         <!-- prioridade 1-5 -->
     //         <!-- categoria -->
-    //         <button class="btn btn_primary" id="btn_finish">Add Task</button>
-    //     </div>  
-    // `;
-    // Add new task
-        
 
-    // overlay.classList.add('display');
-    // const input_name = document.getElementById('input_taskName');
-    // const input_hour = document.getElementById('input_taskHour');
-    // const input_color = document.getElementById('input_taskColor');
-    // const inputs_weekDays = Array.from(document.getElementsByClassName('input_day'));
-    
-    // btn_close.addEventListener('click', closeModal);
 
-    // btn_finish.addEventListener('click', () => {
-    //     // choosenDays será últil para a função "edit" do CRUD
-    //     const choosenDays = [];
-    //     const days = [];
-
-    //     // Tratamento do Horário (ex: 16:28 => 1628, 00:42 => 42)
-    //     const hour = Number(input_hour.value.replace(':', ''));
-
-    //     // Tratamento dos Checkboxes
-    //     inputs_weekDays.forEach(check => {
-    //         if(check.checked) {
-    //             const ArrDayOfWeek = weeks[Number(check.value)];
-    //             choosenDays.push(Number(check.value));
-    //             ArrDayOfWeek.forEach(obj => {
-    //                 if(obj.dia >= today) {
-    //                     days.push(obj.dia);
-    //                 }
-    //             });
-    //         }
-    //     })
-
-    //     if(days.length < 1) {
-    //         return message(null, "Don't forget adding the days");
-    //     }
-
-    //     addNewTask(input_name.value, hour, days, input_color.value);
-    // })
 }
 
 function closeModal() {
@@ -417,19 +376,19 @@ function getWeekNumber(dia) {
 
 // Validar futuramente caso o input seja: maior que 60, negativo, hora >= 2400, ... 
 function formatHours(num) {
-    let mask = '00:00';
+    let mask = 'xx:xx';
     num = String(num);
     
     if(num.length < 3) {
         return "00:"+num
     }
 
-    if(num.length === 3) {
+    if(num.length == 3) {
         return  '0'+num.charAt(0)+':'+num.substring(1);
     }
 
     for(let i = 0; i < num.length; i++) {
-        mask = mask.replace('0', num[i])
+        mask = mask.replace('x', num[i])
     }
 
     return mask;
