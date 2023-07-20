@@ -10,7 +10,7 @@
 }
 
 .calendar_table thead {
-    display: flex;
+    /* display: inline-block; */
 }
 
 .calendar_table thead th {
@@ -22,7 +22,7 @@
 }
 */
 .calendar_table tbody {
-    display: flex;
+    /* display: flex; */
 }
 
 .calendar_table th,

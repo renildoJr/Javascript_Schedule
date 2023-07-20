@@ -304,12 +304,15 @@ function monthCalendar(month) {
     const table = document.createElement('table');
     const thead = document.createElement('thead');
     const tbody = document.createElement('tbody');
+    const theadTr = document.createElement('tr');
 
     table.setAttribute('class', 'calendar_table');
 
     for(let i = 0; i < calendarDays.length; i++) {
-        thead.innerHTML += `<th>${calendarDays[i]}</th>`
+        theadTr.innerHTML += `<th>${calendarDays[i]}</th>`
     }
+
+    thead.appendChild(theadTr);
 
     let lmd = 0, currentMonthDay = 0;
     
@@ -331,10 +334,14 @@ function monthCalendar(month) {
         
     // Partindo da segunda semana até o último dia do mês
 
-    for(let week = 1; week <= 5; week++) {
+    for(let week = 1, day = currentMonthDay + 1; week <= 5; week++) {
         const tr = document.createElement('tr');
-        for(let i = 0; i < listWeeks(1)[week].length; i++) {
-            console.log(i)
+        for(let i = 0; i < 7; i++) {
+            if(day > lastDay) {
+                day = 1;
+            }
+            tr.innerHTML += `<td>${day}</td>`;
+            day ++;
         }
         tbody.appendChild(tr);
     }
