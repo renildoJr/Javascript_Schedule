@@ -37,6 +37,7 @@ tasks.forEach(task =>
    })
 );
 
+
 renderCalendarHTML();
 
  // // Renderização HTML do calendário (Semana atual)
@@ -44,26 +45,26 @@ renderCalendarHTML();
     const semana = listWeeks(getWeekNumber(today));
     const tabela = document.querySelector('.tabelas-container table');
     const thead = document.createElement('tr');
-    const lastDayMesPassado = new Date(date.getFullYear(), mesAtual, 0).getDate();
+    const lastDayLastMonth = new Date(date.getFullYear(), mesAtual, 0).getDate();
     const tasksSemanaAtual = new Set();
-    let ultimosDiasMesPassado = [];
+    let lastDaysLastMonth = [];
     let diaSMesSeguinte = 1; // Melhorar isso mas tarde
     let novoIndex = 0;
     let tasksHours = [];
     let index = 7;
     
-    for(let i = 0, dia = lastDayMesPassado - 6; i < 7; i++) {
-        ultimosDiasMesPassado.push(dia);
+    for(let i = 0, dia = lastDayLastMonth - 6; i < 7; i++) {
+        lastDaysLastMonth.push(dia);
         dia++;
     }
     
-    ultimosDiasMesPassado = ultimosDiasMesPassado.splice(listWeeks(0).length);
+    lastDaysLastMonth = lastDaysLastMonth.splice(listWeeks(0).length);
     thead.innerHTML = `<th></th>`;
     
     calendarDays.map((dia, index) => {
         let data;
-        if(semana[0].semana === 0 && index !== ultimosDiasMesPassado.length) {
-            data = ultimosDiasMesPassado[index];
+        if(semana[0].semana === 0 && index !== lastDaysLastMonth.length) {
+            data = lastDaysLastMonth[index];
         }else {
             const objSemana = semana[novoIndex];
             if(objSemana) {
@@ -99,7 +100,7 @@ renderCalendarHTML();
         tr.innerHTML = `<td class="hora">${formatHours(hora)}</td>`;
 
         if(semana.length < index ) {
-            for(let i = 0; i < ultimosDiasMesPassado.length; i++)
+            for(let i = 0; i < lastDaysLastMonth.length; i++)
             tr.innerHTML+=`<td></td>`;
             index++;
         }
@@ -151,7 +152,7 @@ renderCalendarHTML();
 //     tasks.forEach(task => Task.editTask(task.id, task.name, task.horarios, task.dias, task.status = [{dia: today, done: null}], task.color));
 // }
 
-openModal()
+// openModal()
 
 // FUNÇÕES
 function openModal(context) {
@@ -251,8 +252,6 @@ function openModal(context) {
                 })
             })
 
-            console.log(hour)
-
             addNewTask(inputName.value, hour, allDays, inputColor.value);
         }
     }
@@ -281,6 +280,78 @@ function openModal(context) {
     //         <!-- prioridade 1-5 -->
     //         <!-- categoria -->
 
+
+}
+
+monthCalendar()
+
+function monthCalendar(month) {
+    // START Códigos copiados de outra função
+    const lastDayLastMonth = new Date(date.getFullYear(), mesAtual, 0).getDate();
+    let lastDaysLastMonth = [];
+    
+    for(let i = 0, dia = lastDayLastMonth - 6; i < 7; i++) {
+        lastDaysLastMonth.push(dia);
+        dia++;
+    }
+    
+    lastDaysLastMonth = lastDaysLastMonth.splice(listWeeks(0).length);
+    // END codigos copiados de outra função
+    console.log(lastDaysLastMonth)
+
+    // console.log(calendarDays)
+    
+    const table = document.createElement('table');
+    const thead = document.createElement('thead');
+    const tbody = document.createElement('tbody');
+
+    table.setAttribute('class', 'calendar_table');
+
+    for(let i = 0; i < calendarDays.length; i++) {
+        thead.innerHTML += `<th>${calendarDays[i]}</th>`
+    }
+
+    let lmd = 0, currentMonthDay = 0;
+    
+    // First Week 
+    const trFirstWeek = document.createElement('tr');
+    for(let i = 0; i < calendarDays.length; i++) {
+        
+        if(lmd < lastDaysLastMonth.length) {
+            trFirstWeek.innerHTML += `<td>${lastDaysLastMonth[lmd]}</td>`;
+            lmd ++;
+        }else {
+            trFirstWeek.innerHTML+=`<td>${listWeeks(0)[currentMonthDay].dia}</td>`
+            currentMonthDay ++;
+        }
+        
+        console.log(lmd)
+        tbody.appendChild(trFirstWeek);
+    }
+        
+    // Partindo da segunda semana até o último dia do mês
+
+    for(let week = 1; week <= 5; week++) {
+        const tr = document.createElement('tr');
+        for(let i = 0; i < listWeeks(1)[week].length; i++) {
+            console.log(i)
+        }
+        tbody.appendChild(tr);
+    }
+
+    // for(let day = currentMonthDay; day <= lastDayLastMonth; day++) {        
+    //     for(let weekDay = 0; weekDay < 7; weekDay++) {
+    //         // tr.innerHTML += day 
+    //     }
+    // }
+
+        console.log(listWeeks(0))
+        // listWeeks(i).forEach(obj => console.log(obj.dia))
+
+    table.append(thead, tbody);
+    overlay.appendChild(table);
+
+    // return table 
 
 }
 
@@ -378,6 +449,10 @@ function getWeekNumber(dia) {
 function formatHours(num) {
     let mask = 'xx:xx';
     num = String(num);
+
+    if(num == "0") {
+        return "00:00";
+    }
     
     if(num.length < 3) {
         return "00:"+num
@@ -390,6 +465,7 @@ function formatHours(num) {
     for(let i = 0; i < num.length; i++) {
         mask = mask.replace('x', num[i])
     }
+
 
     return mask;
 }

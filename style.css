@@ -5,6 +5,35 @@
     font-family: sans-serif, Arial, Helvetica;
 }
 
+.calendar_table {
+    background: orange;
+}
+
+.calendar_table thead {
+    display: flex;
+}
+
+.calendar_table thead th {
+    border: 1px solid black;
+}
+
+/* .calendar_table tbody {
+    display: flex;
+}
+*/
+.calendar_table tbody {
+    display: flex;
+}
+
+.calendar_table th,
+.calendar_table td {
+    min-width: 40px;
+}
+
+.calendar_table tbody td {
+    border: 1px solid black;
+}
+
 .btn_primary {
     margin: 0 auto;
     background: #306bb8;
