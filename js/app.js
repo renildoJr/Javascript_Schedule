@@ -1,4 +1,9 @@
 'use strict';
+
+// AJUSTES 
+// * Na função calendar() mudar a lógica de clique do dos dias do mes seguinte
+// * juntar o código da primeira semana com o da segunda semana
+
 import { Task } from "./TaskApi.js";
 const tasks = Task.getTasks();
 const date = new Date();
@@ -10,6 +15,7 @@ const today = date.getDate();
 const overlay = document.querySelector('.overlay');
 const btn_addNewTask = document.getElementById('btn_new-task');
 const calendarDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const calendarMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 for(let d = 1, dia = firstDayOfWeek; d <= lastDay; d++) {
     weeks[dia].push({dia: d, semana: getWeekNumber(d) , tasks: []})
@@ -154,6 +160,8 @@ renderCalendarHTML();
 
 // openModal()
 
+openModal()
+
 // FUNÇÕES
 function openModal(context) {
     // Global 
@@ -209,25 +217,41 @@ function openModal(context) {
     inputColor.setAttribute('id', 'inputColor');
     labelColor.setAttribute('for', 'inputColor');
     labelColor.textContent = 'Color';
-
-    calendarDays.forEach(day => {
-        const th = document.createElement('th');
-        const td = document.createElement('td');
-
-        th.innerHTML = `<label for="weekday_${day}">${day}</label>`;
-        td.innerHTML = `<input type="checkbox" id="weekday_${day}">`;
-
-        thead.appendChild(th);
-        tbody.appendChild(td);
-
-    });
     
+
+    // CONTINUAR DAQUI 
+
+    // criar as tabs
+
+    function tabRepeatWeekDays() {
+        calendarDays.forEach(day => {
+            const th = document.createElement('th');
+            const td = document.createElement('td');
+    
+            th.innerHTML = `<label for="weekday_${day}">${day}</label>`;
+            td.innerHTML = `<input type="checkbox" id="weekday_${day}">`;
+    
+            thead.appendChild(th);
+            tbody.appendChild(td);
+    
+        });
+    }
+
+    function tabSpecificDays() {
+        monthCalendar();
+    }
+
+    tabSpecificDays()
+    tabRepeatWeekDays()
+
+
+
     const inputsCheck = Array.from(tbody.getElementsByTagName('input'));
     
     selectedDays.forEach(day => inputsCheck[day].setAttribute("checked", ''));
     inputsCheck.forEach((inputCheck, index) => inputCheck.addEventListener('click', () => {
         checkItem(inputCheck.checked, index);
-    }))
+    }));
 
     function checkItem(bool, day) {
         if(bool) {
@@ -266,26 +290,11 @@ function openModal(context) {
     modal.appendChild(modalBtnEnd);
     overlay.appendChild(modal);
 
-
-    // let modalTitle = '';
-    // const btn_close = document.getElementById('btn_close');
-    // const btn_finish = document.getElementById('btn_finish');
-    
-    // overlay.classList.add('display');
-
-
-   
-
-    //         <!-- dias  -->
-    //         <!-- prioridade 1-5 -->
-    //         <!-- categoria -->
-
-
 }
 
-monthCalendar()
 
-function monthCalendar(month) {
+// Fazer essa função ser reaproveitavel não só para o modal
+function monthCalendar(month = mesAtual, otherMonthsDays = false, clickable = {allDays: true, function: (el) => {alert(el)}}) {
     // START Códigos copiados de outra função
     const lastDayLastMonth = new Date(date.getFullYear(), mesAtual, 0).getDate();
     let lastDaysLastMonth = [];
@@ -297,14 +306,15 @@ function monthCalendar(month) {
     
     lastDaysLastMonth = lastDaysLastMonth.splice(listWeeks(0).length);
     // END codigos copiados de outra função
-    console.log(lastDaysLastMonth)
 
-    // console.log(calendarDays)
-    
+    const monthTitle = document.createElement('h4');
     const table = document.createElement('table');
     const thead = document.createElement('thead');
     const tbody = document.createElement('tbody');
     const theadTr = document.createElement('tr');
+
+    monthTitle.textContent = calendarMonths[month];
+    thead.appendChild(monthTitle);
 
     table.setAttribute('class', 'calendar_table');
 
@@ -321,45 +331,55 @@ function monthCalendar(month) {
     for(let i = 0; i < calendarDays.length; i++) {
         
         if(lmd < lastDaysLastMonth.length) {
-            trFirstWeek.innerHTML += `<td>${lastDaysLastMonth[lmd]}</td>`;
+            if(otherMonthsDays) {
+                trFirstWeek.innerHTML += `<td>${lastDaysLastMonth[lmd]}</td>`;
+            }else {
+                trFirstWeek.innerHTML = `<td style="border:none" colspan=6"></td>`;
+            }
             lmd ++;
         }else {
             trFirstWeek.innerHTML+=`<td>${listWeeks(0)[currentMonthDay].dia}</td>`
             currentMonthDay ++;
         }
         
-        console.log(lmd)
         tbody.appendChild(trFirstWeek);
     }
         
     // Partindo da segunda semana até o último dia do mês
-
     for(let week = 1, day = currentMonthDay + 1; week <= 5; week++) {
         const tr = document.createElement('tr');
-        for(let i = 0; i < 7; i++) {
-            if(day > lastDay) {
-                day = 1;
+        for(let i = 0, newMonthDays = 1; i < 7; i++) {
+            if(otherMonthsDays && day > lastDay) {
+                const td = document.createElement('td');
+                td.textContent = newMonthDays;
+                tr.appendChild(td);
+                newMonthDays ++;
+            }else {
+                if(day <= lastDay) {
+                    const td = document.createElement('td');
+                    td.textContent = day;
+                    if(!clickable.allDays) {
+                        if(day >= today) {
+                            td.style.color = "blue"; // adaptar esta linha para o arquivo CSS
+                            td.style.cursor = "pointer";
+                            td.addEventListener('click', () => {clickable.function(Number(td.textContent))});
+                        }
+                    }else {
+                        td.style.color = "blue"; // adaptar esta linha para o arquivo CSS
+                            td.style.cursor = "pointer";
+                            td.addEventListener('click', () => {clickable.function(Number(td.textContent))});
+                    }
+                    tr.appendChild(td);
+                }
+                day ++;
             }
-            tr.innerHTML += `<td>${day}</td>`;
-            day ++;
         }
         tbody.appendChild(tr);
     }
 
-    // for(let day = currentMonthDay; day <= lastDayLastMonth; day++) {        
-    //     for(let weekDay = 0; weekDay < 7; weekDay++) {
-    //         // tr.innerHTML += day 
-    //     }
-    // }
-
-        console.log(listWeeks(0))
-        // listWeeks(i).forEach(obj => console.log(obj.dia))
-
     table.append(thead, tbody);
     overlay.appendChild(table);
-
     // return table 
-
 }
 
 function closeModal() {
